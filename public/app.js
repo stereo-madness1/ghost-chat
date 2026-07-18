@@ -1,7 +1,7 @@
 // NOTE: Swap out the mock .onrender domain below with your exact live URL once deployed!
 const BACKEND_URL = window.location.hostname === "localhost" 
     ? "http://localhost:3000" 
-    : "https://ghost-chat-backend.onrender.com"; 
+    : "https://ghost-chat-backend-wk15.onrender.com";
 
 const socket = io(BACKEND_URL);
 let localConnection;
