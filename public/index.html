@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostRooms | Zero-Logs Ephemeral Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        body { background: radial-gradient(circle at top right, #1e1b4b, #090514); }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col justify-between font-sans">
+
+    <!-- Navbar Header -->
+    <header class="p-5 flex justify-between items-center max-w-6xl w-full mx-auto">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="shield-alert" class="text-emerald-400 w-6 h-6"></i>
+            <span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">GHOSTROOMS</span>
+        </div>
+        <div class="flex items-center space-x-2 glass px-3 py-1 rounded-full text-xs text-gray-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Server: Zero-Knowledge</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex items-center justify-center p-4 max-w-4xl w-full mx-auto">
+        
+        <!-- View A: Lobby Interface -->
+        <div id="lobby-view" class="glass rounded-3xl p-8 w-full max-w-md text-center shadow-2xl transition-all duration-300">
+            <h1 class="text-3xl font-extrabold mb-3">Ephemeral Peer-to-Peer Chat</h1>
+            <p class="text-gray-400 text-sm mb-8">No registration. No databases. Messages route straight through your browser memory and self-destruct on tab close.</p>
+            
+            <button id="btn-create" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-gray-900 font-bold py-4 px-6 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition flex justify-center items-center space-x-2">
+                <i data-lucide="plus-circle"></i>
+                <span>Generate Secure Room Link</span>
+            </button>
+            
+            <div id="share-box" class="mt-6 hidden">
+                <p class="text-xs text-emerald-400 mb-2 font-medium">Send this private URL to your peer:</p>
+                <div class="flex items-center space-x-2 bg-gray-950 p-3 rounded-xl border border-gray-800">
+                    <input id="room-url" type="text" readonly class="bg-transparent text-xs text-gray-300 w-full focus:outline-none select-all" value="">
+                    <button id="btn-copy" class="text-cyan-400 hover:text-cyan-300 px-2">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-[11px] text-gray-500 mt-3 flex items-center justify-center gap-1">
+                    <i data-lucide="info" class="w-3 h-3"></i> Waiting for peer to connect via link...
+                </p>
+            </div>
+        </div>
+
+        <!-- View B: Dynamic Chat Engine Panel -->
+        <div id="chat-view" class="glass rounded-3xl w-full h-[600px] shadow-2xl hidden flex-col overflow-hidden transition-all duration-300">
+            <!-- Room Info Header -->
+            <div class="bg-gray-900/60 px-6 py-4 flex justify-between items-center border-b border-gray-800">
+                <div class="flex items-center space-x-3">
+                    <div id="status-indicator" class="w-3 h-3 rounded-full bg-amber-500"></div>
+                    <div>
+                        <h2 id="chat-title" class="text-sm font-bold tracking-wide">CONNECTING...</h2>
+                        <p class="text-[11px] text-gray-400" id="peer-status">Establishing signaling loop</p>
+                    </div>
+                </div>
+                <button onclick="window.location.reload()" class="text-gray-400 hover:text-red-400 text-xs flex items-center space-x-1 glass px-3 py-1.5 rounded-lg">
+                    <i data-lucide="log-out" class="w-3 h-3"></i>
+                    <span>Nuke Room</span>
+                </button>
+            </div>
+
+            <!-- Messages Stream Area -->
+            <div id="messages" class="flex-1 p-6 overflow-y-auto space-y-4 flex flex-col justify-end">
+                <div class="mx-auto bg-gray-900/40 border border-gray-800 rounded-xl px-4 py-2 text-xs text-gray-400 max-w-sm text-center">
+                    🔒 End-to-End P2P Channel active. Closing this tab deletes all data instantly.
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <form id="chat-form" class="p-4 bg-gray-950/80 border-t border-gray-800 flex items-center space-x-2">
+                <input id="msg-input" autocomplete="off" disabled type="text" placeholder="Waiting for connection to stabilize..." class="bg-gray-900 border border-gray-800 focus:border-emerald-500 focus:outline-none rounded-xl px-4 py-3 flex-1 text-sm text-gray-200 placeholder-gray-500">
+                <button type="submit" id="btn-send" disabled class="bg-emerald-500 hover:bg-emerald-600 text-gray-900 p-3 rounded-xl disabled:opacity-40 transition">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <footer class="p-4 text-center text-xs text-gray-600">
+        Engineered with browser-native WebRTC DataChannels. Zero server logs.
+    </footer>
+
+    <script src="/app.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
